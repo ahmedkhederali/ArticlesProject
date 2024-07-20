@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
+
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const cors = require('cors');
@@ -12,11 +13,15 @@ const degreeRoutes = require('./routes/DegreeRoutes/DegreeRoutes');
 const subspecialtyRoutes = require('./routes/SubspecialtyRoutes/subspecialtyRoutes');
 const userRoutes = require('./routes/UserRoutes/UserRoutes');
 
-const connectDB = require('./db/connect');
 // test
 // declare Variable
 const app = express()
 const PORT = process.env.PORT || 5000;
+
+const { AppError, globalErrorHandler } = require('./Errors/errorHandler');
+
+const connectDB = require('./db/connect');
+
 
 // decalre Product Control
 
@@ -49,6 +54,25 @@ app.all("*",(req,res,next)=>{
     message:`Can't Found ${req.originalUrl}`
   })
 })
+
+app.get('/test', (req, res) => {
+  if(PORT === "5001"){
+    throw new AppError('This route is not yet implemented', 401);
+
+  }else{
+      res.send('Hello, World!');
+
+  }
+});
+
+// Route that triggers an error
+app.get('/error', (req, res, next) => {
+  next(new AppError('This is a custom error!', 400));
+});
+
+// Global Error Handling Middleware
+app.use(globalErrorHandler);
+
 const start = async () => {
   try {
     await connectDB(process.env.MONGODB_URL);
@@ -61,3 +85,18 @@ const start = async () => {
 };
 
 start();
+
+
+// Catching Unhandled Rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // You can choose to terminate the process or handle the rejection here
+  process.exit(1);
+});
+
+// Catching Uncaught Exceptions
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  // You can choose to terminate the process or handle the exception here
+  process.exit(1);
+});
