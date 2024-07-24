@@ -6,12 +6,15 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
+const cloudinary=require('cloudinary')
 const cookieParser = require('cookie-parser');
+const fileUpload = require('express-fileupload');
 const doctorRoutes = require('./routes/DoctorRoute/doctorRoutes');
 const specialtyRoutes = require('./routes/specialtyRoutes/specialtyRoutes');
 const degreeRoutes = require('./routes/DegreeRoutes/DegreeRoutes');
 const subspecialtyRoutes = require('./routes/SubspecialtyRoutes/subspecialtyRoutes');
 const userRoutes = require('./routes/UserRoutes/UserRoutes');
+const uploadRoutes = require('./routes/UplaodImages/upload');
 
 // test
 // declare Variable
@@ -22,6 +25,18 @@ const { AppError, globalErrorHandler } = require('./Errors/errorHandler');
 
 const connectDB = require('./db/connect');
 
+// Enable files upload
+app.use(fileUpload({
+  useTempFiles: true,
+  tempFileDir: '/tmp/'
+}));
+
+// Cloudinary configuration (if not already done)
+cloudinary.config({
+  cloud_name:process.env.CLOUD_NAME,
+  api_key:process.env.CLOUD_API_KEY,
+  api_secret:process.env.CLOUD_API_SECRT
+})
 
 // decalre Product Control
 
@@ -45,7 +60,7 @@ app.use('/api/v1/', specialtyRoutes);
 app.use('/api/v1/', degreeRoutes);
 app.use('/api/v1/', subspecialtyRoutes);
 app.use('/api/v1/', userRoutes);
-
+app.use("/api/v1/", uploadRoutes);
 
 // global error 
 app.all("*",(req,res,next)=>{

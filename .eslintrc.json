@@ -11,6 +11,7 @@
       "no-process-exit": "off",
       "no-param-reassign": "off",
       "no-return-await": "off",
+      "camelcase":"off",
       "import/no-extraneous-dependencies": ["off", {"devDependencies": false, "optionalDependencies": false, "peerDependencies": false}],
       "no-underscore-dangle": "off",
       "class-methods-use-this": "off",
