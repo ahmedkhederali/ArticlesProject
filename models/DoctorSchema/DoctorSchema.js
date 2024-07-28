@@ -38,7 +38,13 @@ const doctorSchema = new mongoose.Schema({
       url: { type: String, required:true }
     }],
     validate: [arrayLimit, '{PATH} exceeds the limit of 3']
-  }
+  },
+  comments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Comment',
+    },
+  ],
 });
 
 const Doctor = mongoose.model('Doctor', doctorSchema);
