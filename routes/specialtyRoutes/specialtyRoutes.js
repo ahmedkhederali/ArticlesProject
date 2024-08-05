@@ -16,7 +16,7 @@ router.get('/specialties', specialtyController.getSpecialties);
 router.get('/specialties/:id', specialtyController.getSpecialtyById);
 
 // Update a specialty by ID
-router.put('/specialties/:id', specialtyController.updateSpecialty);
+router.put('/specialties/:id', auth, authAdmin, specialtyController.updateSpecialty);
 
 // Delete a specialty by ID
 router.delete('/specialties/:id',  auth, authAdmin , specialtyController.deleteSpecialty);
