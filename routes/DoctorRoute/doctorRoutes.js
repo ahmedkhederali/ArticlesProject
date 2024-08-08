@@ -21,4 +21,7 @@ router.put('/doctors/:id', doctorController.updateDoctor);
 // Delete a doctor by ID
 router.delete('/doctors/:id', auth, authAdmin , doctorController.deleteDoctor);
 
+// get All Doctors based on specialty
+router.get('/doctors/specialty/:specialtyId', doctorController.getDoctorsBySpecialty);
+
 module.exports = router;
