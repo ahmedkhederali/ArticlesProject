@@ -29,16 +29,9 @@ const doctorSchema = new mongoose.Schema({
       required:true
     },
   },
-  subspecialties: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subspecialty' }],
+  // subspecialties: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subspecialty' }],
   sex: { type: String, enum: ['Male', 'Female'], required: true },
   full_description: { type: String, required: true },
-  clinic_image: {
-    type: [{
-      public_id: { type: String, default: "unknown user" },
-      url: { type: String, required:true }
-    }],
-    validate: [arrayLimit, '{PATH} exceeds the limit of 3']
-  },
   comments: [
     {
       type: mongoose.Schema.Types.ObjectId,

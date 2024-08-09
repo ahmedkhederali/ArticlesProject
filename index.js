@@ -17,6 +17,8 @@ const userRoutes = require('./routes/UserRoutes/UserRoutes');
 const uploadRoutes = require('./routes/UplaodImages/upload');
 const pharmacyRoutes = require('./routes/PharamcyRoute/PharmacyRoute');
 const medicalLabRoutes = require('./routes/MedicalLabRoute/MedicalRoute');
+const commentsRoutes = require('./routes/CommentsRoutes/CommentsRoute');
+
 // test
 // declare Variable
 const app = express()
@@ -64,6 +66,8 @@ app.use('/api/v1/', userRoutes);
 app.use("/api/v1/", uploadRoutes);
 app.use('/api/v1/', pharmacyRoutes);
 app.use('/api/v1/', medicalLabRoutes);
+app.use('/api/v1/', commentsRoutes);
+
 // global error 
 app.all("*",(req,res,next)=>{
   res.status("404").json({
