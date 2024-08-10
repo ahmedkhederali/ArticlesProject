@@ -3,7 +3,7 @@ const Comment = require('../../models/CommentSchema/CommentSchema'); // Import t
 // Create a new comment
 exports.createComment = async (req, res) => {
   try {
-    const { refId, onModel, comment } = req.body;
+    const { refId, onModel, comment} = req.body;
     const userId = req.user.id; // Assuming you have authentication middleware that sets req.user
 
     // Validate that the onModel is a valid value
@@ -29,7 +29,10 @@ exports.createComment = async (req, res) => {
 exports.getCommentsByModel = async (req, res) => {
   try {
     const { refId, onModel } = req.params;
-    const comments = await Comment.find({ refId, onModel }).populate('user', 'name'); // Populate user to include user details
+    const comments = await Comment.find({ refId, onModel }).populate('user', 'name')
+    .sort({ date: -1 }); // Sort by date in descending order (most recent first)
+
+    // Populate user to include user details
     res.status(200).json(comments);
   } catch (error) {
     res.status(500).json({ msg: error.message });

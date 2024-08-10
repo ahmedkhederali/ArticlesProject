@@ -1,14 +1,11 @@
 const mongoose = require('mongoose');
 
-function arrayLimit(val) {
-    return val.length <= 3;
-  }
 const doctorSchema = new mongoose.Schema({
   doc_name: { type: String, required: true },
   age: { type: Number, required: true },
   small_desc: { type: String, required: true },
   specialties: { type: mongoose.Schema.Types.ObjectId, ref: 'Specialty', required: true },
-  rating: { type: Number, min: 0, max: 5 },
+  // rating: { type: Number, min: 0, max: 5 },
   location: { type: String, required: true },
   detection_price: { type: Number, required: true },
   phone: { type: String, required: true },

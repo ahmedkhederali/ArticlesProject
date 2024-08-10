@@ -1,4 +1,3 @@
-// controllers/userController.js
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cloudinary = require("cloudinary");
@@ -11,13 +10,13 @@ const register = async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
 
-    // Check if user already exists
+    // التحقق من أن المستخدم موجود بالفعل
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(500).json({ msg: "This email is already registered" });
+    if (existingUser) return res.status(500).json({ msg: "هذا البريد الإلكتروني مسجل بالفعل" });
 
-    if (password.length < 6) return res.status(500).json({ msg: "Password must be at least 6 characters" });
+    if (password.length < 6) return res.status(500).json({ msg: "يجب أن تكون كلمة المرور 6 أحرف على الأقل" });
 
-    // Encrypt password
+    // تشفير كلمة المرور
     const passwordHash = await bcrypt.hash(password, 10);
     const newUser = new User({
       name,
@@ -28,7 +27,7 @@ const register = async (req, res) => {
 
     await newUser.save();
 
-    // Create JWT for authentication
+    // إنشاء رمز JWT للمصادقة
     const accessToken = createAccessToken({ id: newUser._id });
 
     res.status(200).json({ user: { ...newUser._doc, password: undefined }, accessToken });
@@ -37,21 +36,19 @@ const register = async (req, res) => {
   }
 };
 
-// controllers/userController.js
-
 const login = async (req, res) => {  
     try {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
-      if (!user) return res.status(500).json({ msg: "Invalid email" });
+      if (!user) return res.status(500).json({ msg: "البريد الإلكتروني غير صحيح" });
 
       const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) return res.status(500).json({ msg: "Incorrect password" });
+      if (!isMatch) return res.status(500).json({ msg: "كلمة المرور غير صحيحة" });
 
-      // Create JWT for authentication
+      // إنشاء رمز JWT للمصادقة
       const accessToken = createAccessToken({ id: user._id });
       
-    // Remove the password field from the user object
+    // إزالة حقل كلمة المرور من كائن المستخدم
     const { password: _, ...userWithoutPassword } = user.toObject();
 
     res.status(200).json({ accessToken, user: userWithoutPassword });
@@ -60,42 +57,38 @@ const login = async (req, res) => {
     }
   };
 
- // controllers/userController.js
-
 const GetAllUsers = async (req, res) => {
     try {
       const users = await User.find({});
-      res.status(200).json({ users, msg: "Successfully retrieved all users" });
+      res.status(200).json({ users, msg: "تم استرجاع جميع المستخدمين بنجاح" });
     } catch (error) {
       res.status(500).json({ msg: error.message });
     }
   };
-   
-// controllers/userController.js
-
+  
 // const forgetPassword = async (req, res) => {
 //     const { email } = req.body;
 //     const user = await User.findOne({ email });
   
-//     if (!user) return res.status(500).json({ msg: "User not found" });
+//     if (!user) return res.status(500).json({ msg: "لم يتم العثور على المستخدم" });
   
-//     // Get reset token
+//     // الحصول على رمز إعادة تعيين كلمة المرور
 //     const resetToken = user.getRestPasswordToken();
 //     await user.save({ validateBeforeSave: false });
   
 //     const resetPasswordUrl = `${process.env.FRONTEND_URL}/api/v1/user/reset/${resetToken}`;
-//     const message = `Your password reset token is:\n\n${resetPasswordUrl}\n\nIf you did not request this, please ignore this email.`;
+//     const message = `رمز إعادة تعيين كلمة المرور الخاص بك هو:\n\n${resetPasswordUrl}\n\nإذا لم تطلب ذلك، يرجى تجاهل هذا البريد الإلكتروني.`;
   
 //     try {
 //       await sendEmail({
 //         email: user.email,
-//         subject: "Password Reset Request",
+//         subject: "طلب إعادة تعيين كلمة المرور",
 //         message,
 //       });
   
 //       res.status(200).json({
 //         success: true,
-//         message: `Email sent to ${user.email} successfully`,
+//         message: `تم إرسال البريد الإلكتروني إلى ${user.email} بنجاح`,
 //       });
 //     } catch (error) {
 //       user.resetPasswordToken = undefined;
@@ -104,8 +97,6 @@ const GetAllUsers = async (req, res) => {
 //       res.status(500).json({ msg: error.message });
 //     }
 //   };
-
-  // controllers/userController.js
 
 const resetPassword = async (req, res) => {
     const resetPasswordToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
@@ -116,11 +107,11 @@ const resetPassword = async (req, res) => {
     });
   
     if (!user) {
-      return res.status(400).json({ msg: "Reset password token is invalid or has expired" });
+      return res.status(400).json({ msg: "رمز إعادة تعيين كلمة المرور غير صالح أو منتهي الصلاحية" });
     }
   
     if (req.body.password !== req.body.confirmpassword) {
-      return res.status(400).json({ msg: "Passwords do not match" });
+      return res.status(400).json({ msg: "كلمات المرور غير متطابقة" });
     }
   
     const passwordHash = await bcrypt.hash(req.body.password, 10);
@@ -130,22 +121,20 @@ const resetPassword = async (req, res) => {
     const accessToken = createAccessToken({ id: user._id });
     await user.save();
   
-    res.status(200).json({ msg: "Password updated successfully", accessToken, user, success: true });
+    res.status(200).json({ msg: "تم تحديث كلمة المرور بنجاح", accessToken, user, success: true });
   };
   
-  // controllers/userController.js
-
 const ChangePassword = async (req, res) => {
     const { id } = req.params;
     const { password, confirmpassword } = req.body;
   
     const user = await User.findById(id);
     if (!user) {
-      return res.status(400).json({ msg: "User not found" });
+      return res.status(400).json({ msg: "المستخدم غير موجود" });
     }
   
     if (password !== confirmpassword) {
-      return res.status(400).json({ msg: "Passwords do not match" });
+      return res.status(400).json({ msg: "كلمات المرور غير متطابقة" });
     }
   
     const passwordHash = await bcrypt.hash(password, 10);
@@ -153,11 +142,9 @@ const ChangePassword = async (req, res) => {
     const accessToken = createAccessToken({ id: user._id });
     await user.save();
   
-    res.status(200).json({ msg: "Password updated successfully", accessToken, user, success: true });
+    res.status(200).json({ msg: "تم تحديث كلمة المرور بنجاح", accessToken, user, success: true });
   };
   
-// controllers/userController.js
-
 const deleteUser = async (req, res) => {
     try {
       const user = await User.findByIdAndDelete(req.params.id);
@@ -167,15 +154,12 @@ const deleteUser = async (req, res) => {
       });
     } catch (error) {
       res.status(400).json({
-        status: "failed",
+        status: "فشل",
         error,
       });
     }
   };
   
-
-  // controllers/userController.js
-
 const getUserById = async (req, res) => {
     try {
       const user = await User.findById(req.params.id).select("-password");
@@ -185,14 +169,12 @@ const getUserById = async (req, res) => {
       });
     } catch (error) {
       res.status(400).json({
-        status: "failed",
+        status: "فشل",
         error,
       });
     }
   };
   
-  // controllers/userController.js
-
 const updateUser = async (req, res) => {
     try {
       const user = await User.findByIdAndUpdate(req.params.id, req.body, {
@@ -201,18 +183,16 @@ const updateUser = async (req, res) => {
   
       res.status(200).json({
         user,
-        message: "Successfully updated user",
+        message: "تم تحديث المستخدم بنجاح",
       });
     } catch (error) {
       res.status(400).json({
-        status: "failed",
+        status: "فشل",
         error,
-        msg: "Try again later",
+        msg: "حاول مرة أخرى لاحقاً",
       });
     }
   };
-
-  // controllers/userController.js
 
 const updateUserProfileImg = async (req, res) => {
     try {
@@ -234,14 +214,13 @@ const updateUserProfileImg = async (req, res) => {
       });
     } catch (error) {
       res.status(400).json({
-        status: "failed",
+        status: "فشل",
         error,
       });
     }
   };
-  
 
-  module.exports = {
+module.exports = {
     login,
     register,
     // forgetPassword,
