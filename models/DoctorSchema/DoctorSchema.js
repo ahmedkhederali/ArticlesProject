@@ -5,8 +5,12 @@ const doctorSchema = new mongoose.Schema({
   age: { type: Number, required: true },
   small_desc: { type: String, required: true },
   specialties: { type: mongoose.Schema.Types.ObjectId, ref: 'Specialty', required: true },
-  // rating: { type: Number, min: 0, max: 5 },
-  location: { type: String, required: true },
+  ratings: [
+    {
+      user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+      rating: { type: Number, min: 0, max: 5, required: true }
+    }
+  ],  location: { type: String, required: true },
   detection_price: { type: Number, required: true },
   phone: { type: String, required: true },
   degree: { type: mongoose.Schema.Types.ObjectId, ref: 'Degree', required: true },

@@ -75,12 +75,42 @@ exports.getDoctorsBySpecialty = async (req, res) => {
     let specialistName;
     if(specialtyId){
       specialistName=await Specialty.findById(specialtyId)
-      if (!specialistName) return res.status(404).send({ msg: "لم يتم العثور على أطباء لهذا التخصص." });
+      if (!specialistName) return res.status(200).send({ msg: "لم يتم العثور على أطباء لهذا التخصص." });
     }
     const doctors = await Doctor.find({ specialties: specialtyId }).populate('specialties degree  time_for_works');
-    if (!doctors.length) return res.status(404).send({ msg: "لايوجد دكاتره في هذا التخصص" });
+    if (!doctors.length) return res.status(200).send({ msg: "لايوجد دكاتره في هذا التخصص",specialistName:specialistName.specialty_name });
     res.status(200).send({doctors,specialistName:specialistName.specialty_name});
   } catch (error) {
     res.status(500).send({ msg: "لم يتم العثور على أطباء لهذا التخصص." });
+  }
+};
+
+exports.rateDoctor = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+    const {  rating } = req.body;
+    // Find the doctor by ID
+    const doctor = await Doctor.findById(doctorId);
+
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+
+    // Check if the user has already rated this doctor
+    const existingRating = doctor.ratings.find(r => r.user.toString() === req.user.id);
+
+    if (existingRating) {
+      // If the user has already rated, update the rating
+      existingRating.rating = rating;
+    } else {
+      // If the user has not rated yet, add a new rating
+      doctor.ratings.push({ user: req.user.id, rating });
+    }
+
+    await doctor.save();
+
+    return res.status(200).json({ message: 'Rating submitted successfully', doctor });
+  } catch (error) {
+    return res.status(500).json({ message: 'Server error', error });
   }
 };
