@@ -10,7 +10,8 @@ const doctorSchema = new mongoose.Schema({
       user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
       rating: { type: Number, min: 0, max: 5, required: true }
     }
-  ],  location: { type: String, required: true },
+  ],
+  location: { type: String, required: true },
   detection_price: { type: Number, required: true },
   phone: { type: String, required: true },
   degree: { type: mongoose.Schema.Types.ObjectId, ref: 'Degree', required: true },
@@ -33,12 +34,6 @@ const doctorSchema = new mongoose.Schema({
   // subspecialties: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subspecialty' }],
   sex: { type: String, enum: ['Male', 'Female'], required: true },
   full_description: { type: String, required: true },
-  comments: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Comment',
-    },
-  ],
 });
 
 const Doctor = mongoose.model('Doctor', doctorSchema);

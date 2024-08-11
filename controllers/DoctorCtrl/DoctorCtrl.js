@@ -16,14 +16,8 @@ exports.createDoctor = async (req, res) => {
 // Get all doctors with their comments
 exports.getDoctors = async (req, res) => {
   try {
-    const doctors = await Doctor.find()
-      .populate('specialties degree  time_for_works comments')
-      .populate({
-        path: 'comments',
-        match: { onModel: 'Doctor' }, // Ensure you only get comments related to Doctor
-        populate: { path: 'user', select: 'name' } // Populate user details
-      });
-    
+    const doctors = await Doctor.find().populate('specialties degree  time_for_works')
+  
     res.status(200).json(doctors);
   } catch (error) {
     res.status(500).json({ msg: error.message });
@@ -35,11 +29,6 @@ exports.getDoctorById = async (req, res) => {
   try {
     const doctor = await Doctor.findById(req.params.id)
       .populate('specialties degree  time_for_works')
-      .populate({
-        path: 'comments',
-        match: { onModel: 'Doctor' }, // Ensure you only get comments related to Doctor
-        populate: { path: 'user', select: 'name' } // Populate user details
-      });
 
     if (!doctor) return res.status(404).json({ msg: 'Doctor not found' });
     

@@ -12,7 +12,7 @@ exports.createMedicalLab = async (req, res) => {
 
 exports.getMedicalLabs = async (req, res) => {
   try {
-    const medicalLabs = await MedicalLab.find().populate('comments');
+    const medicalLabs = await MedicalLab.find()
     res.status(200).send(medicalLabs);
   } catch (error) {
     res.status(500).send(error);
@@ -21,7 +21,7 @@ exports.getMedicalLabs = async (req, res) => {
 
 exports.getMedicalLabById = async (req, res) => {
   try {
-    const medicalLab = await MedicalLab.findById(req.params.id).populate('comments');
+    const medicalLab = await MedicalLab.findById(req.params.id);
     if (!medicalLab) return res.status(404).send();
     res.status(200).send(medicalLab);
   } catch (error) {
@@ -43,8 +43,38 @@ exports.deleteMedicalLab = async (req, res) => {
   try {
     const medicalLab = await MedicalLab.findByIdAndDelete(req.params.id);
     if (!medicalLab) return res.status(404).send();
-    res.status(200).send(medicalLab);
+    res.status(200).send({msg:"تم حذف المعمل بنجاح"});
   } catch (error) {
     res.status(500).send(error);
+  }
+};
+
+exports.rateMedicalLab = async (req, res) => {
+  try {
+    const { medicalId } = req.params;
+    const {  rating } = req.body;
+    // Find the doctor by ID
+    const medicalLab = await MedicalLab.findById(medicalId);
+
+    if (!medicalLab) {
+      return res.status(404).json({ message: 'medicalLab not found' });
+    }
+
+    // Check if the user has already rated this medicalLab
+    const existingRating = medicalLab.ratings.find(r => r.user.toString() === req.user.id);
+
+    if (existingRating) {
+      // If the user has already rated, update the rating
+      existingRating.rating = rating;
+    } else {
+      // If the user has not rated yet, add a new rating
+      medicalLab.ratings.push({ user: req.user.id, rating });
+    }
+
+    await medicalLab.save();
+
+    return res.status(200).json({ message: 'Rating submitted successfully', medicalLab });
+  } catch (error) {
+    return res.status(500).json({ message: 'Server error', error });
   }
 };
