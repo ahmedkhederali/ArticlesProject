@@ -30,7 +30,7 @@ exports.getCommentsByModel = async (req, res) => {
   try {
     const { refId, onModel } = req.params;
     const comments = await Comment.find({ refId, onModel }).populate('user', 'name')
-    .sort({ date: -1 }); // Sort by date in descending order (most recent first)
+    // .sort({ date: -1 }); // Sort by date in descending order (most recent first)
 
     // Populate user to include user details
     res.status(200).json(comments);

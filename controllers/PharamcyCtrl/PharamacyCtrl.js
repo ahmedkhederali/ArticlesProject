@@ -12,7 +12,7 @@ exports.createPharmacy = async (req, res) => {
 
 exports.getPharmacies = async (req, res) => {
   try {
-    const pharmacies = await Pharmacy.find().populate('comments');
+    const pharmacies = await Pharmacy.find();
     res.status(200).send(pharmacies);
   } catch (error) {
     res.status(500).send(error);
@@ -21,7 +21,7 @@ exports.getPharmacies = async (req, res) => {
 
 exports.getPharmacyById = async (req, res) => {
   try {
-    const pharmacy = await Pharmacy.findById(req.params.id).populate('comments');
+    const pharmacy = await Pharmacy.findById(req.params.id);
     if (!pharmacy) return res.status(404).send();
     res.status(200).send(pharmacy);
   } catch (error) {
@@ -43,8 +43,37 @@ exports.deletePharmacy = async (req, res) => {
   try {
     const pharmacy = await Pharmacy.findByIdAndDelete(req.params.id);
     if (!pharmacy) return res.status(404).send();
-    res.status(200).send(pharmacy);
+    res.status(200).send({msg:"تم حذف الصيدلية بنجاح"});
   } catch (error) {
     res.status(500).send(error);
+  }
+};
+exports.ratePharmacy = async (req, res) => {
+  try {
+    const { pharmacyId } = req.params;
+    const {  rating } = req.body;
+    // Find the doctor by ID
+    const pharamacy = await Pharmacy.findById(pharmacyId);
+
+    if (!pharamacy) {
+      return res.status(404).json({ message: 'Pharamacy not found' });
+    }
+
+    // Check if the user has already rated this pharamacy
+    const existingRating = pharamacy.ratings.find(r => r.user.toString() === req.user.id);
+
+    if (existingRating) {
+      // If the user has already rated, update the rating
+      existingRating.rating = rating;
+    } else {
+      // If the user has not rated yet, add a new rating
+      pharamacy.ratings.push({ user: req.user.id, rating });
+    }
+
+    await pharamacy.save();
+
+    return res.status(200).json({ message: 'Rating submitted successfully', pharamacy });
+  } catch (error) {
+    return res.status(500).json({ message: 'Server error', error });
   }
 };
