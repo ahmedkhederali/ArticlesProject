@@ -12,10 +12,17 @@ exports.createMedicalLab = async (req, res) => {
 
 exports.getMedicalLabs = async (req, res) => {
   try {
-    const medicalLabs = await MedicalLab.find()
+    const { type } = req.query; // Get the medicallab_type from query parameters
+
+    const filter = {};
+    if (type) {
+      filter.medicallab_type = type; // Add filter condition based on medicallab_type
+    }
+
+    const medicalLabs = await MedicalLab.find(filter); // Apply the filter to the query
     res.status(200).send(medicalLabs);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send({ message: 'An error occurred while fetching medical labs', error });
   }
 };
 

@@ -23,7 +23,12 @@ const medicalLabSchema = new mongoose.Schema({
         name: { type: String, required: true },
         desc: { type: String, required: true }
       }
-    ]
+    ],
+    medicallab_type: {
+      type: String,
+      enum: ['medical', 'central'],
+      required: true
+    }
   });
   
   module.exports = mongoose.model('MedicalLab', medicalLabSchema);

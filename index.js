@@ -12,7 +12,6 @@ const fileUpload = require('express-fileupload');
 const doctorRoutes = require('./routes/DoctorRoute/doctorRoutes');
 const specialtyRoutes = require('./routes/specialtyRoutes/specialtyRoutes');
 const degreeRoutes = require('./routes/DegreeRoutes/DegreeRoutes');
-const subspecialtyRoutes = require('./routes/SubspecialtyRoutes/subspecialtyRoutes');
 const userRoutes = require('./routes/UserRoutes/UserRoutes');
 const uploadRoutes = require('./routes/UplaodImages/upload');
 const pharmacyRoutes = require('./routes/PharamcyRoute/PharmacyRoute');
@@ -61,7 +60,6 @@ app.get('/', (req, res) => {
 app.use('/api/v1/', doctorRoutes);
 app.use('/api/v1/', specialtyRoutes);
 app.use('/api/v1/', degreeRoutes);
-app.use('/api/v1/', subspecialtyRoutes);
 app.use('/api/v1/', userRoutes);
 app.use("/api/v1/", uploadRoutes);
 app.use('/api/v1/', pharmacyRoutes);
