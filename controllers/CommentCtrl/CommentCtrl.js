@@ -7,7 +7,7 @@ exports.createComment = async (req, res) => {
     const userId = req.user.id; // Assuming you have authentication middleware that sets req.user
 
     // Validate that the onModel is a valid value
-    if (!['Doctor', 'Pharmacy', 'MedicalLab'].includes(onModel)) {
+    if (!['Doctor', 'Pharmacy', 'MedicalLab','Nursing'].includes(onModel)) {
       return res.status(400).json({ msg: 'Invalid onModel value' });
     }
 

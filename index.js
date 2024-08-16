@@ -17,6 +17,8 @@ const uploadRoutes = require('./routes/UplaodImages/upload');
 const pharmacyRoutes = require('./routes/PharamcyRoute/PharmacyRoute');
 const medicalLabRoutes = require('./routes/MedicalLabRoute/MedicalRoute');
 const commentsRoutes = require('./routes/CommentsRoutes/CommentsRoute');
+const NursingRoutes = require('./routes/NursingRoutes/NursingRoutes');
+
 
 // test
 // declare Variable
@@ -65,6 +67,8 @@ app.use("/api/v1/", uploadRoutes);
 app.use('/api/v1/', pharmacyRoutes);
 app.use('/api/v1/', medicalLabRoutes);
 app.use('/api/v1/', commentsRoutes);
+app.use('/api/v1/', NursingRoutes);
+
 
 // global error 
 app.all("*",(req,res,next)=>{

@@ -9,7 +9,7 @@ const commentSchema = new mongoose.Schema({
   onModel: {
     type: String,
     required: true,
-    enum: ['Doctor', 'Pharmacy', 'MedicalLab'],
+    enum: ['Doctor', 'Pharmacy','Nursing', 'MedicalLab'],
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
