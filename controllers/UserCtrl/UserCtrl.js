@@ -4,7 +4,7 @@ const cloudinary = require("cloudinary");
 
 const User = require("../../models/Users/Users");
 
-const createAccessToken = (user) => jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: "24h" });
+const createAccessToken = (user) => jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: "1m" });
 
 const register = async (req, res) => {
   try {

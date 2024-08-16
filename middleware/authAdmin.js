@@ -8,7 +8,7 @@ const authAdmin=async (req,res,next)=>{
         })
         // checking about admin User Or Not 
         if(user.role !=="admin"){
-            return res.status(400).json({msg:"Admin resource access denied"})
+            return res.status(400).json({msg:"Admin resource access denied",status:401})
         }
         next()
     } catch (error) {
