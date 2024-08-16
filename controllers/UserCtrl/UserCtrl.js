@@ -13,8 +13,9 @@ const register = async (req, res) => {
     // التحقق من أن المستخدم موجود بالفعل
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(500).json({ msg: "هذا البريد الإلكتروني مسجل بالفعل" });
-
+    const existingUserPhone = await User.findOne({ phone });
     if (password.length < 6) return res.status(500).json({ msg: "يجب أن تكون كلمة المرور 6 أحرف على الأقل" });
+    if (existingUserPhone) return res.status(500).json({ msg: "هذا الرقم مسجل بالفعل" });
 
     // تشفير كلمة المرور
     const passwordHash = await bcrypt.hash(password, 10);
