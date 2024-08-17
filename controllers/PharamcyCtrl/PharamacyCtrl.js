@@ -12,8 +12,21 @@ exports.createPharmacy = async (req, res) => {
 
 exports.getPharmacies = async (req, res) => {
   try {
-    const pharmacies = await Pharmacy.find();
-    res.status(200).send(pharmacies);
+    const { page = 1, limit = 10 } = req.query; 
+    const skip = (page - 1) * limit; // Calculate the number of documents to skip
+    const totalPharamcy = await Pharmacy.countDocuments(); // Get the total number of documents that match the filter
+
+    const pharmacies = await Pharmacy.find()
+    .skip(skip) // Skip documents for pagination
+    .limit(Number(limit)); // Limit the number of documents returned
+
+  res.status(200).send({
+    pharmacies,
+    totalPages: Math.ceil(totalPharamcy / limit), // Calculate total number of pages
+    currentPage: Number(page),
+    totalItems: totalPharamcy, // Total number of items matching the filter
+  });
+
   } catch (error) {
     res.status(500).send(error);
   }

@@ -12,20 +12,33 @@ exports.createMedicalLab = async (req, res) => {
 
 exports.getMedicalLabs = async (req, res) => {
   try {
-    const { type } = req.query; // Get the medicallab_type from query parameters
+    const { type, page = 1, limit = 10 } = req.query; // Get type, page, and limit from query parameters
 
     const filter = {};
     if (type) {
       filter.medicallab_type = type; // Add filter condition based on medicallab_type
     }
 
-    const medicalLabs = await MedicalLab.find(filter); // Apply the filter to the query
-    res.status(200).send(medicalLabs);
+    const skip = (page - 1) * limit; // Calculate the number of documents to skip
+
+    const totalMedicalLabs = await MedicalLab.countDocuments(filter); // Get the total number of documents that match the filter
+    const medicalLabs = await MedicalLab.find(filter)
+      .skip(skip) // Skip documents for pagination
+      .limit(Number(limit)); // Limit the number of documents returned
+
+    res.status(200).send({
+      medicalLabs,
+      totalPages: Math.ceil(totalMedicalLabs / limit), // Calculate total number of pages
+      currentPage: Number(page),
+      totalItems: totalMedicalLabs, // Total number of items matching the filter
+    });
   } catch (error) {
-    res.status(500).send({ message: 'An error occurred while fetching medical labs', error });
+    res.status(500).send({
+      message: 'An error occurred while fetching medical labs',
+      error,
+    });
   }
 };
-
 exports.getMedicalLabById = async (req, res) => {
   try {
     const medicalLab = await MedicalLab.findById(req.params.id);

@@ -61,18 +61,34 @@ exports.deleteDoctor = async (req, res) => {
 exports.getDoctorsBySpecialty = async (req, res) => {
   try {
     const { specialtyId } = req.params;
+    const { page = 1, limit = 10 } = req.query;
+
     let specialistName;
-    if(specialtyId){
-      specialistName=await Specialty.findById(specialtyId)
+    if (specialtyId) {
+      specialistName = await Specialty.findById(specialtyId);
       if (!specialistName) return res.status(200).send({ msg: "لم يتم العثور على أطباء لهذا التخصص." });
     }
-    const doctors = await Doctor.find({ specialties: specialtyId }).populate('specialties degree  time_for_works');
-    if (!doctors.length) return res.status(200).send({ msg: "لايوجد دكاتره في هذا التخصص",specialistName:specialistName.specialty_name });
-    res.status(200).send({doctors,specialistName:specialistName.specialty_name});
+
+    const doctors = await Doctor.find({ specialties: specialtyId })
+      .populate('specialties degree time_for_works')
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const totalDoctors = await Doctor.countDocuments({ specialties: specialtyId });
+
+    if (!doctors.length) return res.status(200).send({ msg: "لايوجد دكاتره في هذا التخصص", specialistName: specialistName.specialty_name });
+
+    res.status(200).send({
+      doctors,
+      specialistName: specialistName.specialty_name,
+      totalPages: Math.ceil(totalDoctors / limit),
+      currentPage: page
+    });
   } catch (error) {
     res.status(500).send({ msg: "لم يتم العثور على أطباء لهذا التخصص." });
   }
 };
+
 
 exports.rateDoctor = async (req, res) => {
   try {
