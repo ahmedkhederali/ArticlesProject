@@ -1,7 +1,6 @@
 const Doctor = require('../../models/DoctorSchema/DoctorSchema');
 const Specialty = require('../../models/SpecilitySchema/SpecitlitySchema');
 
-const { getSpecialtyById } = require('../SpecialtyCtrl/SpecialtyCtrl');
 
 exports.createDoctor = async (req, res) => {
   try {

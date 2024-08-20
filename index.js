@@ -19,6 +19,8 @@ const medicalLabRoutes = require('./routes/MedicalLabRoute/MedicalRoute');
 const commentsRoutes = require('./routes/CommentsRoutes/CommentsRoute');
 const NursingRoutes = require('./routes/NursingRoutes/NursingRoutes');
 
+// admin routes
+const AdminRoutes = require('./routes/AdminRoutes/AdminRoutes');
 
 // test
 // declare Variable
@@ -68,6 +70,9 @@ app.use('/api/v1/', pharmacyRoutes);
 app.use('/api/v1/', medicalLabRoutes);
 app.use('/api/v1/', commentsRoutes);
 app.use('/api/v1/', NursingRoutes);
+// admin Routes
+app.use('/api/v1/', AdminRoutes);
+
 
 
 // global error 

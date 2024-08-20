@@ -29,7 +29,7 @@ const register = async (req, res) => {
     await newUser.save();
 
     // إنشاء رمز JWT للمصادقة
-    const accessToken = createAccessToken({ id: newUser._id });
+    const accessToken = createAccessToken({ id: newUser._id,role:newUser.role });
 
     res.status(200).json({ user: { ...newUser._doc, password: undefined }, accessToken });
   } catch (error) {
@@ -47,7 +47,7 @@ const login = async (req, res) => {
       if (!isMatch) return res.status(500).json({ msg: "كلمة المرور غير صحيحة" });
 
       // إنشاء رمز JWT للمصادقة
-      const accessToken = createAccessToken({ id: user._id });
+      const accessToken = createAccessToken({ id: user._id,role:user.role });
       
     // إزالة حقل كلمة المرور من كائن المستخدم
     const { password: _, ...userWithoutPassword } = user.toObject();
