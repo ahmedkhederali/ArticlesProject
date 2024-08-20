@@ -15,13 +15,26 @@ exports.createDoctor = async (req, res) => {
 // Get all doctors with their comments
 exports.getDoctors = async (req, res) => {
   try {
-    const doctors = await Doctor.find().populate('specialties degree  time_for_works')
-  
-    res.status(200).json(doctors);
+    const { page = 1, limit = 10 } = req.query;
+
+    const doctors = await Doctor.find()
+      .populate('specialties degree time_for_works')
+      .skip((page - 1) * limit)  // Skip the documents to get to the correct page
+      .limit(Number(limit));    // Limit the number of documents returned
+
+    const totalDoctors = await Doctor.countDocuments();  // Total number of doctors
+
+    res.status(200).json({
+      success: true,
+      doctors,
+      totalPages: Math.ceil(totalDoctors / limit),  // Total number of pages
+      currentPage: Number(page),                  // Current page
+    });
   } catch (error) {
     res.status(500).json({ msg: error.message });
   }
 };
+
 
 // Get a specific doctor by ID with comments
 exports.getDoctorById = async (req, res) => {
