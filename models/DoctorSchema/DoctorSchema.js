@@ -7,8 +7,8 @@ const doctorSchema = new mongoose.Schema({
   specialties: { type: mongoose.Schema.Types.ObjectId, ref: 'Specialty', required: true },
   ratings: [
     {
-      user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-      rating: { type: Number, min: 0, max: 5, required: true }
+      user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      rating: { type: Number, min: 0, max: 5, default: 0 } // Default value for rating
     }
   ],
   location: { type: String, required: true },
